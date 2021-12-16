@@ -1,7 +1,9 @@
 Kanban Household Supply Card Generator
 ======================================
 
-Create Kanban supply cards for your home
+Create Kanban supply cards (and labels) for your home. Items are generated as a PDF so you can easily print them. Cards print on standard 3x5 cards. Labels print on an 8.5x11 sheet that you can cutout.
+
+Designed to run on localhost for now. Very much alpha, but it works.
 
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter
      :target: https://github.com/cookiecutter/cookiecutter-django/
@@ -11,6 +13,21 @@ Create Kanban supply cards for your home
      :alt: Black code style
 
 :License: Affero GPLv3
+
+Examples
+--------
+
+Kanban Supply Card Example
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: docs/images/labels_card_example.png
+    :alt: Example Kanban Card
+
+
+
+Kanban Supply Card Example
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. image:: docs/images/labels_shelf_example.png
+    :alt: Example of shelf labels
 
 Settings
 --------
@@ -69,3 +86,5 @@ Deployment
 ----------
 
 The following details how to deploy this application.
+
+
