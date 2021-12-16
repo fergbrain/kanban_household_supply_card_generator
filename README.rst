@@ -5,6 +5,16 @@ Create Kanban supply cards (and labels) for your home. Items are generated as a 
 
 Designed to run on localhost for now. Very much alpha, but it works.
 
+Add items/suppliers/locations: `http://localhost:8000/admin/`
+
+Generate all cards: `http://localhost:8000/generate/card/`
+
+Generate an individual card: `http://localhost:8000//generate/card/<id>/`
+
+Generate shelf labels: `http://localhost:8000//generate/shelf/`
+
+
+
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter
      :target: https://github.com/cookiecutter/cookiecutter-django/
      :alt: Built with Cookiecutter Django
