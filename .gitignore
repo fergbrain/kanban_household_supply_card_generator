@@ -326,3 +326,6 @@ tags
 kanban_household_supply_card_generator/media/
 
 .pytest_cache/
+
+*.sqlite3
+.idea/
