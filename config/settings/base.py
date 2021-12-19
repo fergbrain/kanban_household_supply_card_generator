@@ -71,6 +71,7 @@ THIRD_PARTY_APPS = [
     "crispy_bootstrap5",
     "allauth",
     "allauth.account",
+    "calculation"
 ]
 
 LOCAL_APPS = [
