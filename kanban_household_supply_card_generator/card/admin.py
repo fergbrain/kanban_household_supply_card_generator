@@ -5,7 +5,9 @@ from .forms import ItemForm
 
 class ItemAdmin(admin.ModelAdmin):
     form = ItemForm
+    list_display = ["name", "updated_date"]
     list_filter = ["location__region", "location__rack", "updated_date"]
+    search_fields = ["name"]
 
 
 class LocationAdmin(admin.ModelAdmin):
