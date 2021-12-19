@@ -66,4 +66,4 @@ class Location(models.Model):
         )
 
     def __str__(self):
-        return "Rack %s, Shelf %s in %s" % (self.rack, self.shelf, self.region)
+        return "%s: Rack %s, Shelf %s" % (self.region, self.rack, self.shelf)
