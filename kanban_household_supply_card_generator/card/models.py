@@ -55,8 +55,8 @@ class Supplier(models.Model):
 
 class Location(models.Model):
     region = models.CharField(max_length=30)
-    rack = models.CharField(max_length=10)
-    shelf = models.CharField(max_length=10)
+    rack = models.CharField(max_length=30)
+    shelf = models.CharField(max_length=30)
 
     class Meta:
         ordering = (
