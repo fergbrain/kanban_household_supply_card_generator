@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path("generate/", include("card.urls")),
+    path("generate/", include("kanban_household_supply_card_generator.card.urls")),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
