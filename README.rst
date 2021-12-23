@@ -5,13 +5,13 @@ Create Kanban supply cards (and labels) for your home. Items are generated as a 
 
 Designed to run on localhost for now. Very much alpha, but it works.
 
-Add items/suppliers/locations: `http://localhost:8000/admin/`
+Add items/suppliers/locations: ``http://localhost:8000/admin/``
 
-Generate all cards: `http://localhost:8000/generate/card/`
+Generate all cards: ``http://localhost:8000/generate/card/``
 
-Generate an individual card: `http://localhost:8000//generate/card/<id>/`
+Generate an individual card: ``http://localhost:8000//generate/card/<id>/``
 
-Generate shelf labels: `http://localhost:8000//generate/shelf/`
+Generate shelf labels: ``http://localhost:8000//generate/shelf/``
 
 
 
@@ -38,6 +38,21 @@ Kanban Supply Card Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. image:: docs/images/labels_shelf_example.png
     :alt: Example of shelf labels
+
+Adding an Item
+^^^^^^^^^^^^^^
+.. image:: docs/images/add_change_item.png
+    :alt: Screenshot of the add/change item screen
+
+Adding a Location
+^^^^^^^^^^^^^^^^^
+.. image:: docs/images/add_change_location.png
+    :alt: Screenshot of the add/change location screen
+
+Adding a Supplier
+^^^^^^^^^^^^^^^^^
+.. image:: docs/images/add_change_supplier.png
+    :alt: Screenshot of the add/change supplier screen
 
 Settings
 --------
