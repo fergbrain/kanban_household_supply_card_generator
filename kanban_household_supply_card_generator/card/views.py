@@ -281,8 +281,17 @@ def single_card(request, pk):
     )
 
 
-def all_cards(request):
-    items = Item.objects.all().order_by("pk")
+def all_cards(request, region=None, rack=None, shelf=None):
+    #TODO: Align top
+    if region is None and rack is None and shelf is None:
+        items = Item.objects.all().order_by("pk")
+    elif rack is None:
+        items = Item.objects.filter(location__region=region).order_by("pk")
+    elif shelf is None:
+        items = Item.objects.filter(location__region=region, location__rack=rack).order_by("pk")
+    else:
+        items = Item.objects.filter(location__region=region, location__rack=rack, location__shelf=shelf).order_by("pk")
+
     c, buffer = initiate_card()
 
     c.setTitle("All Cards")
@@ -423,9 +432,17 @@ class MyDocTemplate(BaseDocTemplate):
             if style == 'Heading2':
                 self.notify('TOCEntry', (1, text, self.page))
 
-def all_shelf_labels(request):
+
+def all_shelf_labels(request, region=None, rack=None, shelf=None):
     #TODO: Align top
-    items = Item.objects.all()
+    if region is None and rack is None and shelf is None:
+        items = Item.objects.all()
+    elif rack is None:
+        items = Item.objects.filter(location__region=region)
+    elif shelf is None:
+        items = Item.objects.filter(location__region=region, location__rack=rack)
+    else:
+        items = Item.objects.filter(location__region=region, location__rack=rack, location__shelf=shelf)
 
     buffer = io.BytesIO()
     story = shelf_label_page(items)

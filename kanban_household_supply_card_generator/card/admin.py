@@ -6,7 +6,7 @@ from django.db.models import Count
 
 class ItemAdmin(admin.ModelAdmin):
     form = ItemForm
-    list_display = ["name", "updated_date"]
+    list_display = ["name", "location", "updated_date"]
     list_filter = ["location", "location__region", "location__rack", "updated_date"]
     search_fields = ["name"]
 
