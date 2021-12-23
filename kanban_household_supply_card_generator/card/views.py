@@ -10,6 +10,8 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Frame, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet
 from .models import Item
+from math import ceil
+from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 
 stylesheet = getSampleStyleSheet()
 normalStyle = stylesheet["Normal"]
@@ -306,19 +308,7 @@ def initiate_shelf_label() -> (canvas.Canvas, io.BytesIO):
     return c, buffer
 
 
-def all_shelf_labels(request):
-    items = Item.objects.all()
-
-    # Create a file-like buffer to receive PDF data.
-    buffer = io.BytesIO()
-
-    # Create the PDF object, using the buffer as its "file."
-    c = canvas.Canvas(filename=buffer, pagesize=letter)
-    c.setTitle("Shelf Labels")
-
-    # Draw things on the PDF. Here's where the PDF generation happens.
-    # See the ReportLab documentation for the full list of functionality.
-
+def shelf_label_page(items) -> list:
     story = []
 
     TABLE_DEFAULT_STYLE = TableStyle(
@@ -391,7 +381,7 @@ def all_shelf_labels(request):
         )
         labels.append(t_shelf)
 
-    t_shelf_label_data = [labels[i : i + 3] for i in range(0, len(labels), 3)]
+    t_shelf_label_data = [labels[i: i + 3] for i in range(0, len(labels), 3)]
 
     t_shelf_label = Table(t_shelf_label_data, hAlign="LEFT", style=TABLE_DEFAULT_STYLE)
     t_shelf_label.setStyle(
@@ -406,20 +396,42 @@ def all_shelf_labels(request):
     )
 
     story.append(t_shelf_label)
+    return story
 
-    f = Frame(
-        inch * 0.2,
+class MyDocTemplate(BaseDocTemplate):
+    def __init__(self, filename, **kw):
+        self.allowSplitting = 0
+        BaseDocTemplate.__init__(self, filename, **kw)
+        template = PageTemplate('normal', [Frame(inch * 0.2,
         inch * 0.2,
         8.1 * inch,
         10.6 * inch,
         showBoundary=0,
         leftPadding=0,
-        topPadding=0,
-    )
-    f.addFromList(story, c)
+        topPadding=0,)])
 
-    c.showPage()
-    c.save()
+
+        self.addPageTemplates(template)
+
+    def afterFlowable(self, flowable):
+        "Registers TOC entries."
+        if flowable.__class__.__name__ == 'Paragraph':
+            text = flowable.getPlainText()
+            style = flowable.style.name
+            if style == 'Heading1':
+                self.notify('TOCEntry', (0, text, self.page))
+            if style == 'Heading2':
+                self.notify('TOCEntry', (1, text, self.page))
+
+def all_shelf_labels(request):
+    #TODO: Align top
+    items = Item.objects.all()
+
+    buffer = io.BytesIO()
+    story = shelf_label_page(items)
+
+    doc = MyDocTemplate(buffer)
+    doc.multiBuild(story)
 
     # FileResponse sets the Content-Disposition header so that browsers
     # present the option to save the file.
