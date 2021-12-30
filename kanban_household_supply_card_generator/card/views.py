@@ -51,8 +51,9 @@ def generate_single_card(c, buffer, pk) -> (canvas.Canvas, io.BytesIO):
         ]
     )
 
+
     p_header = Paragraph(
-        """<para leading="30" textColor="white" alignment="center">KANBAN<font size='28'> EXTERNAL </font>SUPPLY</para>""",
+        """<para leading="30" textColor="white" alignment="center">KANBAN<font size='28'> """ + str(item.supply_type) + """ </font>SUPPLY</para>""",
         normalStyle,
     )
     t_header_data = [["{:05d}".format(item.id), p_header]]
