@@ -1,1 +1,9 @@
 {% extends "base.html" %}
+
+{% block content %}
+  <ul>
+    <li><a href="{% url 'admin:index' %}">Admin</a></li>
+    <li><a href="{% url 'card:all_cards' %}">Generate Card PDFs</a></li>
+    <li><a href="{% url 'card:all_labels' %}">Generate Label PDFs</a></li>
+  </ul>
+{% endblock content %}
