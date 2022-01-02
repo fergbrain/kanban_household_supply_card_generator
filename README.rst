@@ -1,9 +1,22 @@
 Kanban Household Supply Card Generator
 ======================================
 
-Create Kanban supply cards (and labels) for your home. Items are generated as a PDF so you can easily print them. Cards print on standard 3x5 cards. Labels print on an 8.5x11 sheet that you can cutout.
+Background
+------------------
+I was watching a video on using `Kanban for your pantry <https://www.youtube.com/watch?v=MC7cRwiAmAI>`_ and thought it was a great idea.
 
-Designed to run on localhost for now. Very much alpha, but it works.
+There's a couple more videos you can watch as well:
+
+#. `Kanban Pantry 2 <https://www.youtube.com/watch?v=EKwCCOBVM7Y>`_
+#. `Kanban @ Home <https://www.youtube.com/watch?v=j9Xs0h0f0rM&t=14s>`_
+
+I couldn't find a tool that would let me easily create the cards I thought I needed, so I made one.
+
+What it is
+---------------------
+This tool lets you create Kanban supply cards (and labels) for your home. Items are generated as a PDF so you can easily print them. Cards print on standard 3x5 cards. Labels print on an 8.5x11 sheet that you can cutout.
+
+Designed to run on localhost for now. Very much alpha, but it works and we use it at home.
 
 Add items/suppliers/locations: ``http://localhost:8000/admin/``
 
