@@ -4,7 +4,7 @@ from django.http import FileResponse
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter, landscape
 from django.core.files.images import get_image_dimensions
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Frame, Table, TableStyle, Image
@@ -307,17 +307,6 @@ def all_cards(request, region=None, rack=None, shelf=None):
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=False, filename="all_cards.pdf")
 
-
-def initiate_shelf_label() -> (canvas.Canvas, io.BytesIO):
-    # Create a file-like buffer to receive PDF data.
-    buffer = io.BytesIO()
-
-    # Create the PDF object, using the buffer as its "file."
-    c = canvas.Canvas(filename=buffer, pagesize=letter)
-
-    return c, buffer
-
-
 def shelf_label_page(items) -> list:
     story = []
 
@@ -408,6 +397,98 @@ def shelf_label_page(items) -> list:
     story.append(t_shelf_label)
     return story
 
+def wire_shelf_label_page(items) -> list:
+    story = []
+
+    TABLE_DEFAULT_STYLE = TableStyle(
+        [
+            #('BOX', (0, 0), (-1, -1), 1, colors.black),
+            ("TOPPADDING", (0, 0), (-1, -1), 0),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+        ]
+    )
+
+    labels = []
+
+    for item in items:
+
+        if item.supply_type == "EXTERNAL":
+            background_color = colors.orange
+        elif item.supply_type == "INTERNAL":
+            background_color = colors.green
+        else:
+            background_color = colors.red
+
+        img_w_orig, img_h_orig = get_image_dimensions(item.image.path)
+        img_ratio = img_h_orig / img_w_orig
+
+        if img_ratio < 1.0:
+            h_img_ratio = img_ratio
+            w_img_ratio = 1
+        else:
+            h_img_ratio = 1
+            w_img_ratio = img_ratio
+
+        image = Image(
+            item.image.path,
+            width=0.95 / w_img_ratio * inch,
+            height=0.95 * h_img_ratio * inch,
+        )
+        t_shelf_data = [
+            ["ITEM DESCRIPTION", image],
+            [Paragraph("<para leading=15 fontsize=16>" + item.name + "</para>"), ""],
+            [
+                item.location.region
+                + "/Rack "
+                + item.location.rack
+                + "/Shelf "
+                + item.location.shelf,
+                "",
+            ],
+        ]
+        t_shelf = Table(
+            t_shelf_data,
+            colWidths=(2.0 * inch, 1.0 * inch),
+            hAlign="LEFT",
+            rowHeights=(0.2 * inch, 0.95 * inch, 0.15 * inch),
+            style=TABLE_DEFAULT_STYLE,
+        )
+        t_shelf.setStyle(
+            TableStyle(
+                [
+                    ('BOX', (0, 0), (-1, -1), 1, colors.lightgrey),
+                    ("BACKGROUND", (0, 0), (0, 0), background_color),
+                    ("TEXTCOLOR", (0, 0), (0, 0), colors.white),
+                    ("FONT", (0, 0), (0, 0), "Helvetica", 12),
+                    ("FONT", (0, 2), (0, 2), "Helvetica", 6),
+                    ("ALIGNMENT", (0, 0), (1, 0), "CENTER"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("SPAN", (1, 0), (-1, -1)),
+                    ("LEFTPADDING", (1, 0), (1, 0), 0),
+                    ("RIGHTPADDING", (1, 0), (1, -0), 0),
+                ]
+            )
+        )
+        labels.append(t_shelf)
+
+    t_shelf_label_data = [labels[i: i + 3] for i in range(0, len(labels), 3)]
+
+    t_shelf_label = Table(t_shelf_label_data, hAlign="LEFT", style=TABLE_DEFAULT_STYLE)
+    t_shelf_label.setStyle(
+        TableStyle(
+            [
+
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+            ]
+        )
+    )
+
+    story.append(t_shelf_label)
+    return story
+
 class MyDocTemplate(BaseDocTemplate):
     def __init__(self, filename, **kw):
         self.allowSplitting = 0
@@ -434,6 +515,20 @@ class MyDocTemplate(BaseDocTemplate):
                 self.notify('TOCEntry', (1, text, self.page))
 
 
+class WireShelfTemplate(BaseDocTemplate):
+    def __init__(self, filename, **kw):
+        self.allowSplitting = 0
+        BaseDocTemplate.__init__(self, filename, **kw)
+        template = PageTemplate('normal', [Frame(inch * 0.2,
+        inch * 0.2,
+        10.6 * inch,
+        8.1 * inch,
+        showBoundary=0,
+        leftPadding=0,
+        topPadding=0,)], pagesize=landscape(letter))
+
+        self.addPageTemplates(template)
+
 def all_shelf_labels(request, region=None, rack=None, shelf=None):
     #TODO: Align top
     if region is None and rack is None and shelf is None:
@@ -455,3 +550,26 @@ def all_shelf_labels(request, region=None, rack=None, shelf=None):
     # present the option to save the file.
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=False, filename="shelf_labels.pdf")
+
+
+def all_wire_shelf_labels(request, region=None, rack=None, shelf=None):
+    #TODO: Align top
+    if region is None and rack is None and shelf is None:
+        items = Item.objects.all()
+    elif rack is None:
+        items = Item.objects.filter(location__region=region)
+    elif shelf is None:
+        items = Item.objects.filter(location__region=region, location__rack=rack)
+    else:
+        items = Item.objects.filter(location__region=region, location__rack=rack, location__shelf=shelf)
+
+    buffer = io.BytesIO()
+    story = wire_shelf_label_page(items)
+
+    doc = WireShelfTemplate(buffer)
+    doc.multiBuild(story)
+
+    # FileResponse sets the Content-Disposition header so that browsers
+    # present the option to save the file.
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=False, filename="wire_shelf_labels.pdf")
